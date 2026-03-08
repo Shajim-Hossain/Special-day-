@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Little Surprise For You</title>
+    
+    <!-- Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins for a soft, modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Base typography and overflow */
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background-color: #fdf2f8; /* Fallback */
+            color: #4a4a4a;
+        }
+
+        /* Calming Animated Pastel Background */
+        .bg-animated {
+            background: linear-gradient(-45deg, #fbc2eb, #e6dee9, #a1c4fd, #fbc2eb);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(136, 144, 195, 0.2);
+        }
+
+        /* Slow moving background orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: floatOrb 12s infinite alternate ease-in-out;
+        }
+        
+        .orb-1 { width: 40vw; height: 40vw; min-width: 300px; min-height: 300px; background: #ffb1b5; top: -10%; left: -10%; }
+        .orb-2 { width: 50vw; height: 50vw; min-width: 400px; min-height: 400px; background: #c2e9fb; bottom: -15%; right: -10%; animation-delay: -6s; animation-direction: alternate-reverse; }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(80px, 80px) scale(1.1); }
+        }
+
+        /* Floating elements for reveal screen */
+        .floating {
+            animation: bob 4s infinite ease-in-out;
+        }
+        
+        .floating-delay {
+            animation: bob 4s infinite ease-in-out;
+            animation-delay: 2s;
+        }
+
+        @keyframes bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Custom scrollbar for memory grid if needed */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.5); border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-animated min-h-screen flex items-center justify-center relative p-4 sm:p-8">
+
+    <!-- Background Orbs -->
+    <div class="orb orb-1 pointer-events-none"></div>
+    <div class="orb orb-2 pointer-events-none"></div>
+
+    <!-- ========================================== -->
+    <!-- 1. LOCK SCREEN (Shows before midnight)     -->
+    <!-- ========================================== -->
+    <div id="lock-screen" class="glass rounded-3xl p-8 sm:p-12 max-w-lg w-full z-10 flex flex-col items-center transition-all duration-1000 ease-in-out">
+        
+        <!-- Icon / Graphic -->
+        <div class="w-16 h-16 mb-6 bg-white/50 rounded-full flex items-center justify-center shadow-inner">
+            <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+        </div>
+
+        <!-- Comforting Message -->
+        <h1 class="text-2xl sm:text-3xl font-semibold mb-3 text-center text-gray-800">Focus on your studies.</h1>
+        <p class="text-center mb-8 text-gray-600">You're going to do great on your exams. Just breathe, review, and trust yourself.<br><br><span class="text-sm italic">Your surprise unlocks in... :)</span></p>
+
+        <!-- Countdown Timer -->
+        <div class="flex gap-3 sm:gap-5 w-full justify-center">
+            <!-- Days -->
+            <div class="flex flex-col items-center">
+                <div class="glass w-16 h-16 sm:w-20 sm:h-20 rounded-xl flex items-center justify-center text-2xl sm:text-3xl font-bold text-indigo-500 shadow-sm" id="days">00</div>
+                <span class="text-xs mt-2 text-gray-500 uppercase tracking-wide">Days</span>
+            </div>
+            <!-- Hours -->
+            <div class="flex flex-col items-center">
+                <div class="glass w-16 h-16 sm:w-20 sm:h-20 rounded-xl flex items-center justify-center text-2xl sm:text-3xl font-bold text-indigo-500 shadow-sm" id="hours">00</div>
+                <span class="text-xs mt-2 text-gray-500 uppercase tracking-wide">Hours</span>
+            </div>
+            <!-- Minutes -->
+            <div class="flex flex-col items-center">
+                <div class="glass w-16 h-16 sm:w-20 sm:h-20 rounded-xl flex items-center justify-center text-2xl sm:text-3xl font-bold text-indigo-500 shadow-sm" id="minutes">00</div>
+                <span class="text-xs mt-2 text-gray-500 uppercase tracking-wide">Mins</span>
+            </div>
+            <!-- Seconds -->
+            <div class="flex flex-col items-center">
+                <div class="glass w-16 h-16 sm:w-20 sm:h-20 rounded-xl flex items-center justify-center text-2xl sm:text-3xl font-bold text-pink-400 shadow-sm" id="seconds">00</div>
+                <span class="text-xs mt-2 text-gray-500 uppercase tracking-wide">Secs</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- 2. REVEAL SCREEN (Shows at/after midnight) -->
+    <!-- ========================================== -->
+    <div id="reveal-screen" class="glass rounded-3xl p-6 sm:p-10 max-w-4xl w-full z-10 flex flex-col items-center hidden opacity-0 transition-opacity duration-1000 ease-in-out max-h-[90vh] overflow-y-auto">
+        
+        <!-- Floating Elements -->
+        <div class="flex w-full justify-between px-4 mb-4">
+            <div class="text-4xl floating">🎈</div>
+            <div class="text-4xl floating-delay">✨</div>
+            <div class="text-4xl floating">🎂</div>
+        </div>
+
+        <!-- Celebratory Headline -->
+        <h1 class="text-3xl sm:text-5xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
+            Happy Birthday! Mizan 🎉🎊
+        </h1>
+        
+        <!-- Custom Message -->
+        <p class="text-center text-gray-700 mb-8 sm:text-lg max-w-2xl">
+            <!-- EDIT YOUR MESSAGE HERE -->
+          ​"শুভ জন্মদিন দোস্ত!<br>
+​আজকের দিনটা আমাদের দুইজনের জন্যই অনেক বড় একটা দিন। একদিকে তোর জন্মদিন, আর অন্যদিকে আমাদের এসএসসি (SSC) পরীক্ষা শুরু। ক্লাস নাইনে যখন আমাদের প্রথম দেখা হয়েছিল, তখন তো একে অপরকে চিনতামই না। অথচ মাত্র দুই বছরের ব্যবধানে তুই আমার এমন একজন বন্ধু হয়ে উঠলি, যার সাথে আমি এমন সব কথা শেয়ার করি যা অন্য কাউকে বলা যায় না।
+​এই দুই বছরে আমরা কত স্মৃতি জমিয়েছি! আমাদের মধ্যে ছোটখাটো অনেক তর্ক হয়েছে, অভিমান হয়েছে; কিন্তু সবচাইতে বড় কথা হলো, আমরা কেউ কারো ওপর বেশিক্ষণ রাগ করে থাকতে পারিনি—সবকিছু আমাদের ধারণার চেয়েও দ্রুত ঠিক হয়ে গেছে। এটাই হয়তো সত্যিকারের বন্ধুত্বের পরিচয়।
+​আমি জানি, পরীক্ষার টেনশনে হয়তো সেভাবে উদযাপন করা হচ্ছে না, কিন্তু মনে রাখিস—তোর এই বিশেষ দিনেই আমাদের জীবনের একটা বড় লড়াই শুরু হচ্ছে। আমি বিশ্বাস করি, তুই পরীক্ষায় যেমন ফাটিয়ে দিবি, তোর আগামীর জীবনটাও তেমন সুন্দর হবে।
+​পরীক্ষা শেষ করে আমরা প্রাণভরে উদযাপন করব। আপাতত কালকের জন্য অনেক অনেক শুভকামনা রইল। চল, কাল পরীক্ষার হলে একসাথে লড়াইটা শুরু করি!
+​শুভ জন্মদিন এবং বেস্ট অফ লাক বন্ধু!"
+        </p>
+
+        <!-- Memory Carousel / Photo Grid -->
+        <div class="w-full">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b border-white/40 pb-2">Favorite Memories</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                
+                <!-- Photo Card 1 -->
+                <div class="bg-white/40 p-2 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300">
+                    <!-- REPLACE src WITH YOUR IMAGE URL -->
+                    <a href="https://ibb.co.com/xS2S0QWr"><img src="https://i.ibb.co.com/mCRCw7kP/LMC-20260208-150036-i-Phone-14-Ultra-Pixel.jpg" alt="LMC-20260208-150036-i-Phone-14-Ultra-Pixel" border="0"></a>
+                    <p class="text-sm text-center text-gray-600 font-medium">School Bunk with Raju.</p>
+                </div>
+
+                <!-- Photo Card 2 -->
+                <div class="bg-white/40 p-2 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300">
+                    <!-- REPLACE src WITH YOUR IMAGE URL -->
+                    <a href="https://ibb.co.com/1CS1HVf"><img src="https://i.ibb.co.com/FQP2Gvb/LMC-20260129-142839-i-Phone-14-Ultra-Pixel.jpg" alt="LMC-20260129-142839-i-Phone-14-Ultra-Pixel" border="0"></a>
+                    <p class="text-sm text-center text-gray-600 font-medium">School bunk just two of us.</p>
+                </div>
+
+                <!-- Photo Card 3 -->
+                <div class="bg-white/40 p-2 rounded-xl shadow-sm hover:scale-105 transition-transform duration-300">
+                    <!-- REPLACE src WITH YOUR IMAGE URL -->
+                    <a href="https://ibb.co.com/B5dLGcRC"><img src="https://i.ibb.co.com/1thZM7xm/IMG-20260128-211958-269.webp" alt="IMG-20260128-211958-269" border="0"></a>
+                    <p class="text-sm text-center text-gray-600 font-medium">Destination-Boddhobhumi.</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC                           -->
+    <!-- ========================================== -->
+    <script>
+        // --- CONFIGURATION ---
+        // Set the target date here (Year, Month (0-11, so March is 02), Day, Hour, Minute, Second)
+        // Note: Months are 0-indexed in JS. Jan=0, Feb=1, Mar=2, etc.
+        // Current target: Aril 21, 2026, 00:00:00 Local Time
+        const targetDate = new Date(2026, 3, 21, 0, 0, 0).getTime();
+        
+        // For testing right now, you can uncomment the line below to set the target to 5 seconds from now:
+        // const targetDate = new Date().getTime() + 5000;
+
+        // DOM Elements
+        const lockScreen = document.getElementById('lock-screen');
+        const revealScreen = document.getElementById('reveal-screen');
+        
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+
+        let timerInterval;
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            // If the countdown is finished (or we are past the date)
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                unlockSurprise();
+                return;
+            }
+
+            // Time calculations for days, hours, minutes and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update DOM with padded zeros (e.g. 09 instead of 9)
+            daysEl.innerText = String(days).padStart(2, '0');
+            hoursEl.innerText = String(hours).padStart(2, '0');
+            minutesEl.innerText = String(minutes).padStart(2, '0');
+            secondsEl.innerText = String(seconds).padStart(2, '0');
+        }
+
+        function unlockSurprise() {
+            // Fade out the lock screen
+            lockScreen.classList.add('opacity-0');
+            lockScreen.classList.add('scale-95'); // slight shrink effect
+
+            // Wait for fade out, then switch screens
+            setTimeout(() => {
+                lockScreen.classList.add('hidden');
+                
+                // Prepare reveal screen
+                revealScreen.classList.remove('hidden');
+                
+                // Force a browser reflow to ensure the transition plays
+                void revealScreen.offsetWidth;
+                
+                // Fade in the reveal screen
+                revealScreen.classList.remove('opacity-0');
+                
+                // Trigger Confetti Celebration!
+                fireConfetti();
+                
+            }, 1000); // 1000ms matches the CSS duration-1000
+        }
+
+        function fireConfetti() {
+            const duration = 4000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 50 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                // since particles fall down, start a bit higher than random
+                confetti(Object.assign({}, defaults, { particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                }));
+                confetti(Object.assign({}, defaults, { particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                }));
+            }, 250);
+        }
+
+        // Initialization
+        // Check immediately on load so we don't see 00:00:00 for a second
+        updateTimer();
+        
+        // Start interval
+        const nowOnLoad = new Date().getTime();
+        if (targetDate - nowOnLoad > 0) {
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+    </script>
+</body>
+</html>
+
